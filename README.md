@@ -1,62 +1,42 @@
-# Numerical-Method-All
+# Newton-Raphson Method — Root Finding in C
 
-Newton-Raphson Method Algorithm
-ALGORITHM: Newton-Raphson Method for Finding Roots
+A clean implementation of the **Newton-Raphson Method** for finding roots of equations, written in C.
 
-INPUT: 
-    - Function f(x)
-    - Derivative f'(x)
-    - Initial guess x₀
-    - Tolerance ε (epsilon)
-    - Maximum iterations N
+---
 
-OUTPUT:
-    - Approximate root xₙ
-    - Number of iterations
+## What is the Newton-Raphson Method?
 
-Step 1: START
+The Newton-Raphson method is a powerful numerical technique for finding roots (zeros) of a real-valued function. Starting from an initial guess, it iteratively refines the estimate using the formula:
 
-Step 2: Set iteration count i = 0
+```
+x₁ = x₀ - f(x₀) / f'(x₀)
+```
 
-Step 3: Input initial guess x₀
+It converges **quadratically**, meaning the number of correct digits roughly doubles with each iteration — making it one of the fastest root-finding methods available.
 
-Step 4: Input tolerance value ε (e.g., 0.00001)
+---
 
-Step 5: Input maximum iterations N (e.g., 100)
+## Algorithm
 
-Step 6: DO WHILE i < N
-    Step 6.1: Calculate f(xᵢ) and f'(xᵢ)
-    
-    Step 6.2: IF |f'(xᵢ)| < ε THEN
-        Print "Derivative is too small. Method fails."
-        STOP
-    END IF
-    
-    Step 6.3: Calculate next approximation:
-        xᵢ₊₁ = xᵢ - f(xᵢ) / f'(xᵢ)
-    
-    Step 6.4: Calculate error = |xᵢ₊₁ - xᵢ|
-    
-    Step 6.5: Print iteration details: i, xᵢ, f(xᵢ), xᵢ₊₁, error
-    
-    Step 6.6: IF error < ε THEN
-        Print "Root found:", xᵢ₊₁
-        Print "Number of iterations:", i+1
-        STOP
-    END IF
-    
-    Step 6.7: Update xᵢ = xᵢ₊₁
-    Step 6.8: i = i + 1
+```
+INPUT:  f(x), f'(x), initial guess x₀, tolerance ε, max iterations N
+OUTPUT: Approximate root xₙ, number of iterations
 
-Step 7: END DO
+1. Set i = 0
+2. WHILE i < N:
+   a. If |f'(xᵢ)| < ε → STOP (derivative too small)
+   b. xᵢ₊₁ = xᵢ - f(xᵢ) / f'(xᵢ)
+   c. error = |xᵢ₊₁ - xᵢ|
+   d. If error < ε → ROOT FOUND
+   e. xᵢ = xᵢ₊₁, i = i + 1
+3. If i = N → "Max iterations reached"
+```
 
-Step 8: IF i = N THEN
-    Print "Maximum iterations reached. Method may not converge."
+---
 
-Step 9: STOP
+## Code
 
-C program to find the root of a given equation using the Newton-Raphson method:
-
+```c
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -64,104 +44,95 @@ C program to find the root of a given equation using the Newton-Raphson method:
 #define MAX_ITERATIONS 100
 #define EPSILON 0.00001
 
-// Function prototypes
-double f(double x);      // The function f(x)
-double f_prime(double x); // Derivative f'(x)
+double f(double x)       { return x*x*x - 2*x - 5; }
+double f_prime(double x) { return 3*x*x - 2; }
 
 int main() {
     double x0, x1, error;
     int iteration = 0;
-    
-    printf("Newton-Raphson Method for Root Finding\n");
-    printf("======================================\n");
-    
-    // Input initial guess
+
     printf("Enter initial guess: ");
     scanf("%lf", &x0);
-    
+
     printf("\nIteration\t x0\t\t f(x0)\t\t x1\t\t Error\n");
     printf("----------------------------------------------------------------\n");
-    
-    // Newton-Raphson iteration
+
     do {
-        // Check if derivative is zero
         if (fabs(f_prime(x0)) < EPSILON) {
-            printf("Derivative is zero at x = %.6f. Method fails!\n", x0);
+            printf("Derivative is zero. Method fails!\n");
             exit(1);
         }
-        
-        // Apply Newton-Raphson formula
-        x1 = x0 - f(x0) / f_prime(x0);
-        
-        // Calculate error
+
+        x1    = x0 - f(x0) / f_prime(x0);
         error = fabs(x1 - x0);
-        
-        // Print iteration details
-        printf("%d\t\t %.6f\t %.6f\t %.6f\t %.6f\n", 
+
+        printf("%d\t\t %.6f\t %.6f\t %.6f\t %.6f\n",
                iteration + 1, x0, f(x0), x1, error);
-        
-        // Update for next iteration
+
         x0 = x1;
         iteration++;
-        
-        // Check for maximum iterations
+
         if (iteration > MAX_ITERATIONS) {
-            printf("\nMaximum iterations reached. Method may not converge.\n");
+            printf("Maximum iterations reached.\n");
             break;
         }
-        
     } while (error > EPSILON);
-    
-    // Print the root
-    printf("\n========================================\n");
-    printf("Root found at x = %.6f\n", x1);
-    printf("Function value at root: f(x) = %.6f\n", f(x1));
-    printf("Number of iterations: %d\n", iteration);
-    
+
+    printf("\nRoot found at x = %.6f\n", x1);
+    printf("f(x) at root   = %.6f\n", f(x1));
+    printf("Iterations     = %d\n", iteration);
+
     return 0;
 }
+```
 
-// Example function: x^3 - 2x - 5 = 0
-double f(double x) {
-    return x*x*x - 2*x - 5;
-}
+> The example solves **x³ - 2x - 5 = 0**. To use a different equation, just update `f(x)` and `f_prime(x)`.
 
-// Derivative: 3x^2 - 2
-double f_prime(double x) {
-    return 3*x*x - 2;
-}
+---
 
-Sample Output:
-Newton-Raphson Method for Root Finding
-======================================
+## Sample Output
 
+```
 Enter initial guess: 2
 
-Iteration	 x0		 f(x0)		 x1		 Error
+Iteration    x0          f(x0)       x1          Error
 ----------------------------------------------------------------
-1		 2.000000	 -1.000000	 2.100000	 0.100000
-2		 2.100000	 0.061000	 2.094568	 0.005432
-3		 2.094568	 0.000202	 2.094551	 0.000017
-4		 2.094551	 0.000000	 2.094551	 0.000000
+1            2.000000    -1.000000   2.100000    0.100000
+2            2.100000     0.061000   2.094568    0.005432
+3            2.094568     0.000202   2.094551    0.000017
+4            2.094551     0.000000   2.094551    0.000000
 
-========================================
 Root found at x = 2.094551
-Function value at root: f(x) = 0.000000
-Number of iterations: 4
+f(x) at root   = 0.000000
+Iterations     = 4
+```
 
+---
 
-Advantages of Newton-Raphson Method:
-Very fast convergence (quadratic)
+## How to Compile and Run
 
-Simple to implement
+```bash
+gcc newton_raphson.c -o newton_raphson -lm
+./newton_raphson
+```
 
-Usually converges in few iterations
+---
 
-Limitations:
-Requires derivative calculation
+## Advantages
 
-May fail if derivative is zero
+- Very fast convergence (quadratic)
+- Simple to implement
+- Usually converges in very few iterations
 
-May not converge with poor initial guess
+## Limitations
 
-Does not guarantee convergence for all functions
+- Requires the derivative f'(x)
+- Fails if f'(x) = 0 at any iteration point
+- May not converge with a poor initial guess
+- Does not guarantee convergence for all functions
+
+---
+
+## Topics
+
+`numerical-methods` `root-finding` `c-programming` `newton-raphson` `mathematics`
